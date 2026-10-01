@@ -1,0 +1,198 @@
+erDiagram
+  STATE ||--o{ COUNTY : "is divided into"
+  COUNTY ||--o{ CRASH_SITE : "contains"
+  CRASH_SITE ||--|{ CRASH : "is the place of"
+  WEATHER_CONDITION ||--o{ CRASH : "was reported for"
+  LIGHT_CONDITION ||--o{ CRASH : "was reported for"
+  ROAD_CLASS ||--o{ CRASH : "classifies the road of"
+  CRASH ||--|{ VEHICLE : involves
+  CRASH ||--|{ PERSON : involves
+  GRID_CELL ||--o{ CRASH_SITE : "contains"
+  DAILY_WEATHER |o--o{ CRASH : "describes the day of"
+  WEATHER_STATION ||--o{ DAILY_WEATHER : records
+  GRID_CELL ||--o{ CELL_RISK_SCORE : "is scored in"
+  CONDITION_PROFILE ||--o{ CELL_RISK_SCORE : "is scored for"
+  CONDITION_PROFILE ||--o{ SUBSCRIPTION : "is watched under"
+  APP_USER ||--o{ SAVED_LOCATION : saves
+  APP_USER ||--o{ CRASH_REPORT : submits
+  APP_USER ||--o{ REPORT_VOTE : casts
+  CRASH_REPORT ||--o{ REPORT_VOTE : receives
+  CRASH_REPORT ||--|| REPORT_CELL : "is located by"
+  GRID_CELL ||--o{ REPORT_CELL : contains
+  APP_USER ||--o{ ROUTE_REQUEST : requests
+  APP_USER |o--o{ CRASH_REPORT : moderates
+  SAVED_LOCATION ||--o{ SUBSCRIPTION : "is watched by"
+  SUBSCRIPTION ||--o{ ALERT : triggers
+  ROUTE_REQUEST ||--|{ ROUTE_OPTION : offers
+
+  STATE {
+    tinyint state_code PK
+    varchar state_name
+  }
+  COUNTY {
+    tinyint state_code PK,FK
+    smallint county_code PK
+    varchar county_name
+  }
+  WEATHER_CONDITION {
+    tinyint weather_code PK
+    varchar description
+    varchar weather_group
+  }
+  LIGHT_CONDITION {
+    tinyint light_code PK
+    varchar description
+    varchar light_group
+  }
+  ROAD_CLASS {
+    tinyint func_sys_code PK
+    varchar description
+  }
+  CRASH_SITE {
+    decimal latitude PK
+    decimal longitude PK
+    tinyint state_code FK
+    smallint county_code FK
+    varchar cell_id FK
+  }
+  CRASH {
+    smallint data_year PK
+    int st_case PK
+    decimal latitude FK
+    decimal longitude FK
+    date crash_date FK "with weather_station_id"
+    tinyint crash_hour
+    tinyint crash_minute
+    tinyint weather_code FK
+    tinyint light_code FK
+    tinyint func_sys_code FK
+    char weather_station_id FK "with crash_date"
+    tinyint rural_urban
+    smallint fatalities
+    smallint persons_involved
+    smallint vehicles_involved
+  }
+  VEHICLE {
+    smallint data_year PK,FK
+    int st_case PK,FK
+    smallint veh_no PK
+    smallint body_type
+    smallint model_year
+    tinyint speeding_related
+    tinyint deaths_in_vehicle
+  }
+  PERSON {
+    smallint data_year PK,FK
+    int st_case PK,FK
+    smallint veh_no PK
+    smallint per_no PK
+    tinyint person_type
+    tinyint injury_severity
+    smallint age
+    tinyint restraint_use
+  }
+  GRID_CELL {
+    varchar cell_id PK
+    decimal min_latitude UK "unique with min_longitude"
+    decimal min_longitude UK "unique with min_latitude"
+  }
+  WEATHER_STATION {
+    char station_id PK
+    varchar station_name
+    decimal latitude
+    decimal longitude
+  }
+  DAILY_WEATHER {
+    char station_id PK,FK
+    date obs_date PK
+    decimal precipitation_mm
+    decimal snowfall_mm
+    decimal snow_depth_mm
+    decimal temp_max_c
+    decimal temp_min_c
+    decimal avg_wind_ms
+  }
+  CONDITION_PROFILE {
+    tinyint condition_id PK
+    varchar weather_group UK "unique with light_group"
+    varchar light_group UK "unique with weather_group"
+    int national_est_crashes
+    decimal national_serious_fatal_pct
+  }
+  CELL_RISK_SCORE {
+    varchar cell_id PK,FK
+    tinyint condition_id PK,FK
+    int crash_count
+    int fatality_count
+    datetime computed_at
+  }
+  APP_USER {
+    int user_id PK
+    varchar email UK
+    varchar password_hash
+    varchar display_name
+    varchar role
+    decimal safety_weight
+    varchar units
+    datetime created_at
+  }
+  SAVED_LOCATION {
+    int location_id PK
+    int user_id FK
+    varchar label
+    decimal latitude
+    decimal longitude
+    datetime created_at
+  }
+  CRASH_REPORT {
+    int report_id PK
+    int user_id FK
+    decimal latitude
+    decimal longitude
+    varchar reason
+    varchar status
+    datetime reported_at
+    int reviewed_by FK
+    datetime reviewed_at
+  }
+  REPORT_CELL {
+    int report_id PK,FK
+    varchar cell_id FK
+  }
+  REPORT_VOTE {
+    int report_id PK,FK
+    int user_id PK,FK
+    tinyint vote
+    datetime voted_at
+  }
+  SUBSCRIPTION {
+    int subscription_id PK
+    int location_id FK,UK "unique with condition_id"
+    tinyint condition_id FK,UK "unique with location_id"
+    decimal alert_threshold
+    decimal baseline_score
+    boolean is_active
+    datetime created_at
+  }
+  ALERT {
+    int alert_id PK
+    int subscription_id FK
+    decimal risk_score_at_send
+    datetime sent_at
+  }
+  ROUTE_REQUEST {
+    int route_id PK
+    int user_id FK
+    decimal origin_lat
+    decimal origin_lon
+    decimal dest_lat
+    decimal dest_lon
+    varchar chosen_option
+    datetime requested_at
+  }
+  ROUTE_OPTION {
+    int route_id PK,FK
+    varchar option_type PK
+    int travel_time_s
+    decimal risk_score
+  }
