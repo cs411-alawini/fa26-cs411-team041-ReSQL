@@ -4,7 +4,7 @@
 **Team:** ReSQL (Team 041)
 **Members:** Praveen Ramesh Jayasree, Adithyaa Veerabathiran Seran, Sree Vinay Ravuru, Saravanan Rajendran
 
-This document covers the Stage 3 deliverables: the database implemented on Google Cloud Platform, the DDL for every table, the data we loaded, four advanced SQL queries, and an indexing analysis of each query. The schema is exactly the relational schema from our Stage 2 submission (section 5 of `stage2_database_design-p2.md`), including its CHECK constraints, unique keys and delete rules. We lost points in Stage 2, so we am including `stage2_revisions.md`.
+This document covers the Stage 3 deliverables: the database implemented on Google Cloud Platform, the DDL for every table, the data we loaded, four advanced SQL queries, and an indexing analysis of each query. The schema is exactly the relational schema from our Stage 2 submission (section 5 of `stage2_database_design-p2.md`), including its CHECK constraints, unique keys and delete rules. We lost points in Stage 2, so we are including `stage2_revisions.md`.
 
 ---
 
