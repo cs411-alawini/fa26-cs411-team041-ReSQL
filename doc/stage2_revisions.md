@@ -1,3 +1,21 @@
+# Stage 2 Revisions (Team ReSQL)
+
+## Comment 1: the diagram should not contain FKs
+
+**Feedback.** The UML/ER diagram should not contain foreign keys. Foreign keys are an implementation-level concept, not a conceptual-level one.
+
+**Response.** We agree. The diagram is a conceptual model, so it should show entities, their attributes and the relationships between them, not the columns a relational schema uses to implement those relationships.
+
+**What we changed.**
+- We removed every foreign-key attribute from the ER diagram below, for example `state_code` in `CRASH_SITE`, `user_id` in `SAVED_LOCATION` and `CRASH_REPORT`, and `subscription_id` in `ALERT`. A relationship line with its cardinality now carries each of these associations.
+- Primary keys and unique keys stay, because they identify an entity and are part of the conceptual model.
+- Weak entities (`COUNTY`, `VEHICLE`, `PERSON`, `DAILY_WEATHER`, `ROUTE_OPTION`) show only their own partial key, marked `partial key`. The rest of their identity comes from the owning entity through the relationship, so we no longer copy the owner's key into them.
+- Association entities with no key of their own (`CELL_RISK_SCORE`, `REPORT_VOTE`) show only their descriptive attributes. Their identity is the combination of the entities they connect.
+
+**Where the foreign keys went.** They still exist, but only at the implementation level: the relational schema derived from this diagram and the `CREATE TABLE` statements in `Database Design.md`. The mapping from relationships to foreign keys happens in that step, not in the conceptual diagram.
+
+---
+
 # ER Diagram: Traffic Safety Risk Analyzer (Team ReSQL)
 
 ```mermaid
@@ -20,7 +38,8 @@ erDiagram
   APP_USER ||--o{ CRASH_REPORT : submits
   APP_USER ||--o{ REPORT_VOTE : casts
   CRASH_REPORT ||--o{ REPORT_VOTE : receives
-  GRID_CELL ||--o{ CRASH_REPORT : "contains"
+  CRASH_REPORT ||--|| REPORT_CELL : "is located by"
+  GRID_CELL ||--o{ REPORT_CELL : contains
   APP_USER ||--o{ ROUTE_REQUEST : requests
   APP_USER |o--o{ CRASH_REPORT : moderates
   SAVED_LOCATION ||--o{ SUBSCRIPTION : "is watched by"
@@ -136,6 +155,9 @@ erDiagram
     varchar status
     datetime reported_at
     datetime reviewed_at
+  }
+  REPORT_CELL {
+    int report_id PK "same as CRASH_REPORT"
   }
   REPORT_VOTE {
     tinyint vote
