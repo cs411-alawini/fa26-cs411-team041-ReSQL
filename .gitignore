@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+backend/.env
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.env
+frontend/test-results/
+frontend/playwright-report/
+*.tsbuildinfo
+
+# Data downloads (too large for git)
+data/
+*.zip
+ghcnd_*.csv*
+
+.DS_Store
+Thumbs.db
